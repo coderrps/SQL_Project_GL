@@ -1,0 +1,183 @@
+[Q1] Which was the most frequent crime committed each week? 
+[Q2] Is crime more prevalent in areas with a higher population density, fewer police personnel, and a larger precinct area? 
+[Q3] At what points of the day is the crime rate at its peak? Group this by the type of crime.
+[Q4] At what point in the day do more crimes occur in a different locality?
+[Q5] Which age group of people is more likely to fall victim to crimes at certain points in the day?
+[Q6] What is the status of reported crimes?
+[Q7] Does the existence of CCTV cameras deter crimes from happening?
+[Q8] How much footage has been recovered from the CCTV at the crime scene?
+[Q9] Is crime more likely to be committed by relation of victims than strangers?
+[Q10] What are the methods used by the public to report a crime? 
+
+
+
+ans1: WITH weekly_crime_counts AS (
+    SELECT week_number, crime_type, COUNT(*) AS crime_count,
+           RANK() OVER(PARTITION BY week_number ORDER BY COUNT(*) DESC) AS crime_rank
+    FROM report_t
+    GROUP BY week_number, crime_type
+)
+SELECT week_number, crime_type, crime_count
+FROM weekly_crime_counts
+WHERE crime_rank = 1;
+
+
+
+ans2: SELECT area_name, population_density, COUNT(*) AS crime_count
+FROM location_t
+JOIN report_t ON location_t.area_code = report_t.area_code
+GROUP BY area_name, population_density
+ORDER BY crime_count DESC;
+
+
+ans3: WITH time_day_parts AS (
+    SELECT 
+        incident_time,
+        CASE 
+            WHEN CAST(SUBSTRING(incident_time, 1, 2) AS UNSIGNED) BETWEEN 0 AND 4 THEN 'Midnight'
+            WHEN CAST(SUBSTRING(incident_time, 1, 2) AS UNSIGNED) BETWEEN 5 AND 12 THEN 'Morning'
+            WHEN CAST(SUBSTRING(incident_time, 1, 2) AS UNSIGNED) BETWEEN 13 AND 18 THEN 'Afternoon'
+            WHEN CAST(SUBSTRING(incident_time, 1, 2) AS UNSIGNED) BETWEEN 19 AND 21 THEN 'Evening'
+            ELSE 'Night'
+        END AS time_day_part,
+        crime_type
+    FROM 
+        report_t
+)
+SELECT 
+    time_day_part,
+    crime_type,
+    COUNT(*) AS crime_count
+FROM 
+    time_day_parts
+GROUP BY 
+    time_day_part,
+    crime_type;
+
+
+
+ans4: WITH area_time_parts AS (
+    SELECT 
+        location_t.area_name,
+        incident_time,
+        CASE 
+            WHEN CAST(SUBSTRING(incident_time, 1, 2) AS UNSIGNED) BETWEEN 0 AND 4 THEN 'Midnight'
+            WHEN CAST(SUBSTRING(incident_time, 1, 2) AS UNSIGNED) BETWEEN 5 AND 12 THEN 'Morning'
+            WHEN CAST(SUBSTRING(incident_time, 1, 2) AS UNSIGNED) BETWEEN 13 AND 18 THEN 'Afternoon'
+            WHEN CAST(SUBSTRING(incident_time, 1, 2) AS UNSIGNED) BETWEEN 19 AND 21 THEN 'Evening'
+            ELSE 'Night'
+        END AS time_day_part
+    FROM 
+        report_t
+    JOIN 
+        location_t ON report_t.area_code = location_t.area_code
+)
+SELECT 
+    area_name,
+    time_day_part,
+    COUNT(*) AS crime_count
+FROM 
+    area_time_parts
+GROUP BY 
+    area_name,
+    time_day_part;
+
+
+
+ans5: WITH age_groups AS (
+    SELECT 
+        victim_age,
+        CASE 
+            WHEN victim_age BETWEEN 0 AND 12 THEN 'Kids'
+            WHEN victim_age BETWEEN 13 AND 23 THEN 'Teenage'
+            WHEN victim_age BETWEEN 24 AND 35 THEN 'Middle Age'
+            WHEN victim_age BETWEEN 36 AND 55 THEN 'Adults'
+            ELSE 'Old'
+        END AS age_group,
+        incident_time
+    FROM 
+        report_t
+    JOIN 
+        victim_t ON report_t.victim_code = victim_t.victim_code
+),
+time_day_parts AS (
+    SELECT 
+        incident_time,
+        CASE 
+            WHEN CAST(SUBSTRING(incident_time, 1, 2) AS UNSIGNED) BETWEEN 0 AND 4 THEN 'Midnight'
+            WHEN CAST(SUBSTRING(incident_time, 1, 2) AS UNSIGNED) BETWEEN 5 AND 12 THEN 'Morning'
+            WHEN CAST(SUBSTRING(incident_time, 1, 2) AS UNSIGNED) BETWEEN 13 AND 18 THEN 'Afternoon'
+            WHEN CAST(SUBSTRING(incident_time, 1, 2) AS UNSIGNED) BETWEEN 19 AND 21 THEN 'Evening'
+            ELSE 'Night'
+        END AS time_day_part,
+        age_group
+    FROM 
+        age_groups
+)
+SELECT 
+    time_day_part,
+    age_group,
+    COUNT(*) AS victim_count
+FROM 
+    time_day_parts
+GROUP BY 
+    time_day_part,
+    age_group
+ORDER BY 
+    time_day_part,
+    FIELD(age_group, 'Kids', 'Teenage', 'Middle Age', 'Adults', 'Old');
+
+
+
+ans6: SELECT case_status_desc, COUNT(*) AS status_count
+FROM report_t
+GROUP BY case_status_desc;
+
+
+ans7: SELECT
+    CASE
+        WHEN cctv_count > 0 THEN 'With CCTV'
+        ELSE 'Without CCTV'
+    END AS cctv_status,
+    COUNT(*) AS area_count,
+    AVG(crime_rate) AS avg_crime_rate
+FROM (
+    SELECT
+        location_t.area_code,
+        COUNT(DISTINCT report_t.report_no) AS crime_count,
+        location_t.cctv_count,
+        COUNT(DISTINCT report_t.report_no) / location_t.cctv_count AS crime_rate
+    FROM
+        location_t
+    LEFT JOIN
+        report_t ON location_t.area_code = report_t.area_code
+    GROUP BY
+        location_t.area_code
+) AS crime_data
+GROUP BY
+    cctv_status;
+
+
+ans8: SELECT
+    SUM(CASE WHEN cctv_flag = 'true' THEN location_t.cctv_count ELSE 0 END) AS footage_recovered,
+    SUM(CASE WHEN cctv_flag = 'false' THEN location_t.cctv_count ELSE 0 END) AS footage_not_recovered
+FROM
+    report_t
+JOIN
+    location_t ON report_t.area_code = location_t.area_code;
+
+
+ans9: SELECT offender_relation, COUNT(*) AS crime_count
+FROM report_t
+WHERE offender_relation IS NOT NULL
+GROUP BY offender_relation;
+
+
+ans10: SELECT
+    complaint_type,
+    COUNT(*) AS crime_count
+FROM
+    report_t
+GROUP BY
+    complaint_type;
+

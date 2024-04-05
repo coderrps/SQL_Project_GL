@@ -1,0 +1,12 @@
+cctv_status,area_name,area_count,avg_crime_rate
+"With CCTV","West Valley",1,0.58210000
+"With CCTV","77th Street",1,0.38670000
+"With CCTV",Southwest,1,0.33330000
+"With CCTV",Northeast,1,0.17650000
+"With CCTV","Van Nuys",1,0.63200000
+"With CCTV","West LA",1,0.63930000
+"With CCTV",Rampart,1,1.41210000
+"With CCTV",Newton,1,0.26910000
+"With CCTV",Harbor,1,0.39440000
+"With CCTV",Hollenbeck,1,1.11180000
+"With CCTV",Hollywood,1,0.43570000

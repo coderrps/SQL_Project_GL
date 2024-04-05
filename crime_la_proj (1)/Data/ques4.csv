@@ -1,0 +1,56 @@
+area_name,time_day_part,crime_count
+Hollenbeck,Midnight,35
+Harbor,Afternoon,21
+Newton,Midnight,11
+Hollenbeck,Afternoon,59
+"Van Nuys",Midnight,22
+"West LA",Night,14
+"Van Nuys",Morning,49
+"Van Nuys",Afternoon,50
+Newton,Afternoon,24
+Southwest,Afternoon,17
+"West LA",Morning,39
+Newton,Evening,15
+Rampart,Midnight,26
+Hollenbeck,Morning,46
+"Van Nuys",Evening,27
+Hollenbeck,Evening,38
+"West LA",Midnight,24
+Hollywood,Afternoon,42
+Northeast,Midnight,7
+Harbor,Midnight,7
+Harbor,Morning,20
+Rampart,Morning,76
+"Van Nuys",Night,10
+"West LA",Evening,32
+"West LA",Afternoon,47
+Southwest,Evening,13
+Harbor,Evening,17
+Southwest,Morning,16
+Hollywood,Evening,26
+Rampart,Evening,38
+Hollenbeck,Night,11
+"77th Street",Evening,13
+Rampart,Night,17
+"77th Street",Afternoon,19
+Northeast,Morning,14
+Rampart,Afternoon,76
+Northeast,Afternoon,15
+Newton,Night,4
+"77th Street",Morning,12
+"West Valley",Night,8
+"77th Street",Night,5
+Hollywood,Morning,25
+Northeast,Evening,7
+"77th Street",Midnight,9
+Hollywood,Midnight,14
+"West Valley",Afternoon,49
+"West Valley",Midnight,28
+"West Valley",Evening,20
+"West Valley",Morning,51
+Southwest,Night,5
+Northeast,Night,2
+Southwest,Midnight,5
+Hollywood,Night,15
+Newton,Morning,20
+Harbor,Night,6

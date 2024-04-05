@@ -1,0 +1,26 @@
+time_day_part,age_group,victim_count
+Afternoon,Kids,36
+Afternoon,Teenage,2
+Afternoon,"Middle Age",77
+Afternoon,Adults,235
+Afternoon,Old,69
+Evening,Kids,19
+Evening,Teenage,3
+Evening,"Middle Age",42
+Evening,Adults,142
+Evening,Old,40
+Midnight,Kids,13
+Midnight,Teenage,2
+Midnight,"Middle Age",31
+Midnight,Adults,110
+Midnight,Old,32
+Morning,Kids,31
+Morning,Teenage,6
+Morning,"Middle Age",79
+Morning,Adults,198
+Morning,Old,54
+Night,Kids,5
+Night,Teenage,1
+Night,"Middle Age",16
+Night,Adults,57
+Night,Old,18
